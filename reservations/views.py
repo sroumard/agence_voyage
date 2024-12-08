@@ -9,8 +9,6 @@ from .serializers import ClientSerializer, ItineraireSerializer, HotelSerializer
 
 
 
-def home (request) :
-    return render(request,"reservations/home.html")
 
 def creer_client(request) :
     if request.method == "POST" :
