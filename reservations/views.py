@@ -3,6 +3,9 @@ from django.http import JsonResponse, HttpResponseRedirect
 from .models import Client, Itineraire, Hotel, Activite, Jour, Deplacement
 from .forms import ClientForm, ItineraireForm, JourForm
 from datetime import date, datetime
+from rest_framework import viewsets, generics
+from rest_framework.response import Response
+from .serializers import ClientSerializer, ItineraireSerializer, HotelSerializer, ActiviteSerializer, JourSerializer, DeplacementSerializer
 
 
 
@@ -98,3 +101,29 @@ def gestion_transport(request, itineraire_id):
         'transports_disponibles': transports_disponibles,
     })
 
+
+
+# vues serailisé 
+class ClientViewSet(viewsets.ModelViewSet):
+    queryset = Client.objects.all()
+    serializer_class = ClientSerializer
+
+class ItineraireViewSet(viewsets.ModelViewSet) :
+    queryset = Itineraire.objects.all()
+    serializer_class : ItineraireSerializer
+
+class HotelViewSet(viewsets.ModelViewSet):
+    queryset = Hotel.objects.all()
+    serializer_class = HotelSerializer
+
+class ActiviteViewSet(viewsets.ModelViewSet):
+    queryset = Activite.objects.all()
+    serializer_class = ActiviteSerializer
+
+class JourViewSet(viewsets.ModelViewSet):
+    queryset = Jour.objects.all()
+    serializer_class = JourSerializer
+
+class DeplacementViewSet(viewsets.ModelViewSet):
+    queryset = Deplacement.objects.all()
+    serializer_class = DeplacementSerializer
