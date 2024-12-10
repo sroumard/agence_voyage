@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}Gestion des Transports{% endblock %}
+
+{% block content %}
+<h1>Gestion des Transports</h1>
+<p>Itinéraire : {{ itineraire.nom }}</p>
+<ul>
+    {% for transport in transports_disponibles %}
+    <li>{{ transport.nom }} ({{ transport.type }}) - {{ transport.tarif_par_jour }} €/jour</li>
+    {% endfor %}
+</ul>
+{% endblock %}

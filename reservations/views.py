@@ -12,14 +12,14 @@ from .serializers import ClientSerializer, ItineraireSerializer, HotelSerializer
 
 def creer_client(request) :
     if request.method == "POST" :
-        form = ClientForm(request.Post)
+        form = ClientForm(request.POST)
         if form.is_valid() :
             form.save()
-            return HttpResponseRedirect('/clients/')
+            return HttpResponseRedirect('/')
     else:
-        form = ClientForm(request.Post)
+        form = ClientForm(request.POST)
 
-    return render (request,'creer_client.html', {'form' : form} )
+    return render (request,'reservations/creer_client.html', {'form' : form} )
 
 
 
@@ -48,7 +48,7 @@ def verifier_disponibilites(request):
 
         return JsonResponse({"hotels": hotels_disponibles})
     
-    return render(request, 'verifier_disponibilites.html')
+    return render(request, 'reservations/verifier_disponibilites.html')
 
 
 
@@ -64,7 +64,7 @@ def creer_itineraire(request, client_id):
             return HttpResponseRedirect(f'/clients/{client_id}/itineraires/')
     else:
         form = ItineraireForm()
-    return render(request, 'creer_itineraire.html', {'form': form, 'client': client})
+    return render(request, 'reservations/creer_itineraire.html', {'form': form, 'client': client})
 
 
 def ajouter_jour_itineraire(request, itineraire_id):
@@ -79,13 +79,13 @@ def ajouter_jour_itineraire(request, itineraire_id):
             return HttpResponseRedirect(f'/itineraires/{itineraire_id}/')
     else:
         form = JourForm()
-    return render(request, 'ajouter_jour_itineraire.html', {'form': form, 'itineraire': itineraire})
+    return render(request, 'reservations/ajouter_jour_itineraire.html', {'form': form, 'itineraire': itineraire})
 
 def finaliser_itineraire(request, itineraire_id):
     itineraire = get_object_or_404(Itineraire, id=itineraire_id)
     jours = itineraire.jours.all()
     total_budget = sum(jour.hotel.note * 100 for jour in jours)  # Exemple de calcul de coûts
-    return render(request, 'finaliser_itineraire.html', {
+    return render(request, 'reservations/finaliser_itineraire.html', {
         'itineraire': itineraire,
         'jours': jours,
         'total_budget': total_budget,
@@ -94,7 +94,7 @@ def finaliser_itineraire(request, itineraire_id):
 def gestion_transport(request, itineraire_id):
     itineraire = get_object_or_404(Itineraire, id=itineraire_id)
     transports_disponibles = Deplacement.objects.filter(itineraires=itineraire)
-    return render(request, 'gestion_transport.html', {
+    return render(request, 'reservations/gestion_transport.html', {
         'itineraire': itineraire,
         'transports_disponibles': transports_disponibles,
     })
@@ -108,7 +108,7 @@ class ClientViewSet(viewsets.ModelViewSet):
 
 class ItineraireViewSet(viewsets.ModelViewSet) :
     queryset = Itineraire.objects.all()
-    serializer_class : ItineraireSerializer
+    serializer_class = ItineraireSerializer
 
 class HotelViewSet(viewsets.ModelViewSet):
     queryset = Hotel.objects.all()

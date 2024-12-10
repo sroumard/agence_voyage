@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Finaliser l'Itinéraire{% endblock %}
+
+{% block content %}
+<h1>Finaliser l'Itinéraire</h1>
+<p>Client : {{ itineraire.client.nom }}</p>
+<p>Total du budget : {{ total_budget }} €</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Hôtel</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for jour in jours %}
+        <tr>
+            <td>{{ jour.debut }} - {{ jour.fin }}</td>
+            <td>{{ jour.hotel.nom }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}Créer un Itinéraire{% endblock %}
+
+{% block content %}
+<h1>Créer un Itinéraire</h1>
+<p>Client : {{ client.nom }}</p>
+<form method="post" class="mt-4">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Créer</button>
+</form>
+{% endblock %}

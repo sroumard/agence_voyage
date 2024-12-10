@@ -59,7 +59,7 @@ class ReservationHotel(models.Model):
     def __str__(self):
         return f"Réservation pour {self.hotel.nom} du {self.debut} au {self.fin}"
  
- 
+
 class Activite(models.Model):
     nom = models.CharField(max_length=255)
     duree = models.PositiveIntegerField(help_text="Durée en minutes")
@@ -84,6 +84,7 @@ class Jour(models.Model):
 
 
 class Deplacement(models.Model):
+    nom = models.CharField(max_length=255)
     TYPE_CHOICES = [
         ('voiture', 'Voiture'),
         ('minibus', 'Minibus'),

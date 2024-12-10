@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block title %}Ajouter un Jour à l'Itinéraire{% endblock %}
+
+{% block content %}
+<h1>Ajouter un Jour à l'Itinéraire</h1>
+<form method="post" class="mt-4">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Ajouter</button>
+</form>
+{% endblock %}

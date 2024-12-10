@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Vérifier Disponibilités{% endblock %}
+
+{% block content %}
+<h1>Vérifier les disponibilités des hôtels</h1>
+<form method="post" class="mt-4">
+    {% csrf_token %}
+    <div class="mb-3">
+        <label for="debut" class="form-label">Date de début</label>
+        <input type="date" id="debut" name="debut" class="form-control">
+    </div>
+    <div class="mb-3">
+        <label for="fin" class="form-label">Date de fin</label>
+        <input type="date" id="fin" name="fin" class="form-control">
+    </div>
+    <button type="submit" class="btn btn-primary">Vérifier</button>
+</form>
+{% endblock %}
