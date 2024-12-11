@@ -1,5 +1,5 @@
 from django import forms
-from .models import Client, Itineraire, Jour, Deplacement
+from .models import Client, Itineraire, Jour, Deplacement, Hotel
 
 
 class ClientForm(forms.ModelForm):
@@ -23,4 +23,9 @@ class JourForm(forms.ModelForm):
 class DeplacementForm(forms.ModelForm):
     class Meta:
         model = Deplacement
+        fields = '__all__'
+
+class HotelForm(forms.ModelForm):
+    class Meta:
+        model = Hotel
         fields = '__all__'

@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse, HttpResponseRedirect
 from .models import Client, Itineraire, Hotel, Activite, Jour, Deplacement
-from .forms import ClientForm, ItineraireForm, JourForm
+from .forms import ClientForm, ItineraireForm, JourForm , HotelForm
 from datetime import date, datetime
 from rest_framework import viewsets, generics
 from rest_framework.response import Response
@@ -99,6 +99,26 @@ def gestion_transport(request, itineraire_id):
         'transports_disponibles': transports_disponibles,
     })
 
+import requests
+
+def afficher_hotel(request):
+    # Définir la requête Overpass API pour récupérer les hôtels
+    overpass_url = "https://overpass-api.de/api/interpreter"
+    query = """
+    [out:json];
+    node["tourism"="hotel"](1.815573,2.224199,48.902145,2.469920);  // Zone autour de Paris
+    out;
+    """
+    try:
+        response = requests.get(overpass_url, params={'data': query})
+        response.raise_for_status()  # Vérifie si la requête a réussi
+        hotels = response.json().get("elements", [])
+    except requests.RequestException as e:
+        hotels = []  # En cas d'erreur, aucune donnée n'est renvoyée
+        print(f"Erreur lors de la récupération des données : {e}")
+
+    # Passer les données au template
+    return render(request, 'reservations/afficher_hotel.html', {'hotels': hotels})
 
 
 # vues serailisé 
