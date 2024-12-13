@@ -7,10 +7,21 @@
 {% block content %}
     <h2>Carte des Hôtels</h2>
     <div id="map"></div>
+    <style>
+    #map {
+        height: 500px;
+        width: 100%;
+    }
+    </style>
+
+<form method="GET" action="{% url 'afficher_hotel' %}">
+    <input type="text" name="nom" placeholder="Rechercher un hôtel par nom">
+    <button type="submit">Rechercher</button>
+</form>
 
     <script>
         // Initialisation de la carte
-        var map = L.map('map').setView([48.8566, 2.3522], 13); // Coordonnées de Paris
+        var map = L.map('map').setView([-8.5, 115.3522], 10); // Coordonnées de Paris
 
         // Ajouter les tuiles OpenStreetMap
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {

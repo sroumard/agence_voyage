@@ -106,13 +106,17 @@ def afficher_hotel(request):
     overpass_url = "https://overpass-api.de/api/interpreter"
     query = """
     [out:json];
-    node["tourism"="hotel"](1.815573,2.224199,48.902145,2.469920);  // Zone autour de Paris
+    node["tourism"="hotel"](-8.8,114.224199,-8.1,116.469920);  // Zone autour de Paris
     out;
     """
     try:
         response = requests.get(overpass_url, params={'data': query})
         response.raise_for_status()  # Vérifie si la requête a réussi
         hotels = response.json().get("elements", [])
+        nom_hotel = request.GET.get('nom',None)
+        if nom_hotel:
+            hotels = [hotel for hotel in hotels if nom_hotel.lower() in hotel.get('tags', {}).get('name', '').lower()]
+# lower pour convertir en miniscule et tags c'est un mot clé dans l'api ducoup on filtre avec dictionnaire du dictionnaire
     except requests.RequestException as e:
         hotels = []  # En cas d'erreur, aucune donnée n'est renvoyée
         print(f"Erreur lors de la récupération des données : {e}")
