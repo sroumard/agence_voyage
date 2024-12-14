@@ -1,6 +1,6 @@
 from datetime import datetime
 from rest_framework import serializers
-from .models import Client, Itineraire, Hotel, Activite, Jour, Deplacement, ReservationHotel
+from .models import Client, Itineraire, Hotel, Activite, Jour, Deplacement
 
 class ClientSerializer(serializers.ModelSerializer):
     class Meta:
@@ -58,7 +58,4 @@ class DeplacementSerializer(serializers.ModelSerializer):
         model = Deplacement
         fields = '__all__'
 
-class ReservationHotelSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ReservationHotel
-        fields = '__all__'
+

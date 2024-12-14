@@ -1,7 +1,7 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import redirect, render, get_object_or_404
 from django.http import JsonResponse, HttpResponseRedirect
 from .models import Client, Itineraire, Hotel, Activite, Jour, Deplacement
-from .forms import ClientForm, ItineraireForm, JourForm , HotelForm
+from .forms import ClientForm, ItineraireForm
 from datetime import date, datetime
 from rest_framework import viewsets, generics
 from rest_framework.response import Response
@@ -106,7 +106,7 @@ def afficher_hotel(request):
     overpass_url = "https://overpass-api.de/api/interpreter"
     query = """
     [out:json];
-    node["tourism"="hotel"](-8.8,114.224199,-8.1,116.469920);  // Zone autour de Paris
+    node["tourism"="hotel"](-8.8,114.224199,-8.1,116.469920);  // Zone autour de bali
     out;
     """
     try:
@@ -120,9 +120,27 @@ def afficher_hotel(request):
     except requests.RequestException as e:
         hotels = []  # En cas d'erreur, aucune donnée n'est renvoyée
         print(f"Erreur lors de la récupération des données : {e}")
-
+    
     # Passer les données au template
     return render(request, 'reservations/afficher_hotel.html', {'hotels': hotels})
+
+
+
+def enregistrer_hotel(request):
+    if request.method == "POST":
+        nom = request.POST.get('nom')
+        latitude = request.POST.get('latitude')
+        longitude = request.POST.get('longitude')
+        description = request.POST.get('description')
+
+        # Enregistrer dans la base de données
+        Hotel.objects.create(
+            nom=nom,
+            latitude=latitude,
+            longitude=longitude,
+        )
+
+        return redirect('afficher_hotel')  # Redirige vers la carte après l'enregistrement
 
 
 # vues serailisé 

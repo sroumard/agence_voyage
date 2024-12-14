@@ -20,5 +20,7 @@ urlpatterns = [
     path('itineraires/<int:itineraire_id>/finaliser/', views.finaliser_itineraire, name='finaliser_itineraire'),
     path('itineraires/<int:itineraire_id>/transport/', views.gestion_transport, name='gestion_transport'),
     path('afficher_hotel/', views.afficher_hotel, name='afficher_hotel'),
+    path('enregistrer_hotel/', views.enregistrer_hotel, name='enregistrer_hotel'),  # Nouveau chemin
+
     path('api/', include(router.urls)),  # API Rest
 ]
