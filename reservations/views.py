@@ -1,5 +1,5 @@
 from django.shortcuts import redirect, render, get_object_or_404
-from django.http import JsonResponse, HttpResponseRedirect
+from django.http import JsonResponse, HttpResponseRedirect,HttpResponse
 from .models import Client, Itineraire, Hotel, Activite, Jour, Deplacement
 from .forms import ClientForm, ItineraireForm
 from datetime import date, datetime
@@ -7,7 +7,9 @@ from rest_framework import viewsets, generics
 from rest_framework.response import Response
 from .serializers import ClientSerializer, ItineraireSerializer, HotelSerializer, ActiviteSerializer, JourSerializer, DeplacementSerializer
 
-
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+from io import BytesIO
 
 
 def creer_client(request) :
@@ -67,19 +69,6 @@ def creer_itineraire(request, client_id):
     return render(request, 'reservations/creer_itineraire.html', {'form': form, 'client': client})
 
 
-def ajouter_jour_itineraire(request, itineraire_id):
-    itineraire = get_object_or_404(Itineraire, id=itineraire_id)
-    if request.method == "POST":
-        form = JourForm(request.POST)
-        if form.is_valid():
-            jour = form.save(commit=False)
-            jour.itineraire = itineraire
-            jour.save()
-            form.save_m2m()
-            return HttpResponseRedirect(f'/itineraires/{itineraire_id}/')
-    else:
-        form = JourForm()
-    return render(request, 'reservations/ajouter_jour_itineraire.html', {'form': form, 'itineraire': itineraire})
 
 def finaliser_itineraire(request, itineraire_id):
     itineraire = get_object_or_404(Itineraire, id=itineraire_id)
@@ -141,24 +130,67 @@ def enregistrer_hotel(request):
         )
 
         return redirect('afficher_hotel')  # Redirige vers la carte après l'enregistrement
-"""
-def generer_facture(request, itineraire_id):
-    itineraire = get_object_or_404(Itineraire,id=itineraire_id)
+
+
+
+def generer_facture_PDF(request, itineraire_id):
+    # Récupérer l'itinéraire
+    itineraire = get_object_or_404(Itineraire, id=itineraire_id)
+    
+    # Récupérer les détails de l'itinéraire
     details = []
-    for jour in itineraire.jours :
-        hotel = jour.hotel.nom
+    for jour in itineraire.jour_itineraire.all():
+        hotels = [chambre.hotel.nom for chambre in jour.chambres.all()]
+
         activites = [activite.nom for activite in jour.activites.all()]
-        details.append ({
-            "jour": jour.id,
-            "hotel" : hotel ,
-            "activites" : activites}
-            )
+        details.append({
+            "jour": jour.date,
+            "hotel": hotels[0],
+            "activites": activites
+        })
+    
+    # Créer une réponse HTTP avec un fichier PDF
+    buffer = BytesIO()
+    p = canvas.Canvas(buffer, pagesize=letter)
+    
+    # Ajouter le titre de la facture
+    p.setFont("Helvetica", 16)
+    p.drawString(100, 750, f"Facture pour l'itinéraire: {itineraire.nom}")
+    
+    # Informations de transport
+    p.setFont("Helvetica", 12)
+    p.drawString(100, 730, f"Transport: {itineraire.deplacement}")
 
-    # details= Facture.get_details_Jours(itineraire.jours)
+    # Détails par jour
+    y_position = 710
+    p.drawString(100, y_position, "Détails par jour:")
+    y_position -= 20
+    
+    for jour_details in details:
+        jour_str = f"{jour_details['jour']} - Hôtel: {jour_details['hotel']}"
+        p.drawString(100, y_position, jour_str)
+        y_position -= 15
+        
+        if jour_details['activites']:
+            activites_str = f"Activités: {', '.join(jour_details['activites'])}"
+            p.drawString(120, y_position, activites_str)
+            y_position -= 15
+    
+    # Prix total
+    y_position -= 20
+    p.drawString(100, y_position, f"Prix total: {itineraire.tarif}€")
+    
+    # Finaliser le PDF
+    p.showPage()
+    p.save()
+    
+    # Revenir au début du fichier et envoyer la réponse
+    buffer.seek(0)
+    response = HttpResponse(buffer, content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="facture_{itineraire.nom}.pdf"'
+    return response
 
-    return {"itineraire": itineraire.nom, "transport": itineraire.deplacement ,"details par jours" : details}
 
-"""
 # vues serailisé 
 class ClientViewSet(viewsets.ModelViewSet):
     queryset = Client.objects.all()
