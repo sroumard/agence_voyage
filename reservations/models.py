@@ -8,6 +8,8 @@ class Client(models.Model) :
     nombre_enfants = models.PositiveIntegerField()
     duree_sejour =  models.PositiveIntegerField()
     budget = models.PositiveIntegerField()
+    email = models.EmailField(max_length=255, unique=True)
+
 
     def __str__(self):
         return f" Nom : {self.nom}, Budget :{self.budget}"
@@ -84,6 +86,35 @@ class Jour(models.Model) :
     
     def __str__(self):
         return f"le jour : {self.date}"
+    
+class Facture(models.Model) :
+    Itineraire = models.ForeignKey(Itineraire, on_delete=models.CASCADE,related_name="Itineraire")
+    client = models.ForeignKey(Client, on_delete = models.CASCADE, related_name = "Facture")
+    jours = models.ManyToManyField(Jour)
+    prix_total = models.DecimalField(blank=True, null=True)
+    
+    def __str__(self):
+        return f"Facture de {self.client}"
+    
+#details l'itinieraire et activités pour chaque jour 
+
+    def get_details_Jours(self):
+        details = []
+        activites= []
+        for jour in self.jours.all() :
+            hotel = jour.hotel
+            for activite in jour.activite.all() :
+                activites.append(activite.nom)
+            
+            details.append({
+                'date' : jour.date,
+                'hotel' : hotel.nom,
+                'activites' : activites,
+                })
+        return details
+        
+
+    
     
 
 
