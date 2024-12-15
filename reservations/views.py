@@ -141,8 +141,24 @@ def enregistrer_hotel(request):
         )
 
         return redirect('afficher_hotel')  # Redirige vers la carte après l'enregistrement
+"""
+def generer_facture(request, itineraire_id):
+    itineraire = get_object_or_404(Itineraire,id=itineraire_id)
+    details = []
+    for jour in itineraire.jours :
+        hotel = jour.hotel.nom
+        activites = [activite.nom for activite in jour.activites.all()]
+        details.append ({
+            "jour": jour.id,
+            "hotel" : hotel ,
+            "activites" : activites}
+            )
 
+    # details= Facture.get_details_Jours(itineraire.jours)
 
+    return {"itineraire": itineraire.nom, "transport": itineraire.deplacement ,"details par jours" : details}
+
+"""
 # vues serailisé 
 class ClientViewSet(viewsets.ModelViewSet):
     queryset = Client.objects.all()

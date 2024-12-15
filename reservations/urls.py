@@ -12,7 +12,6 @@ router.register(r'jours', views.JourViewSet)
 router.register(r'deplacements', views.DeplacementViewSet)
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
     path('', views.verifier_disponibilites, name='verifier_disponibilites'),
     path('creer_client/', views.creer_client, name='creer_client'),
     path('clients/<int:client_id>/creer_itineraire/', views.creer_itineraire, name='creer_itineraire'),
