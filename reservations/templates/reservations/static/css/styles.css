@@ -111,3 +111,7 @@ footer a:hover {
         padding: 0.4rem 1rem;
     }
 }
+#map {
+    height: 500px;
+    width: 100%;
+}

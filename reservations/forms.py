@@ -1,6 +1,14 @@
 from django import forms
-from .models import Client, Itineraire, Jour, Deplacement, Hotel
+from .models import Client, Itineraire, Jour, Deplacement, Hotel, Activite
+from django.contrib.auth.models import User
+from django.contrib.auth.forms import UserCreationForm
 
+class UserRegistrationForm(UserCreationForm):
+    email = forms.EmailField(required=True)
+
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'password1', 'password2']
 
 class ClientForm(forms.ModelForm):
     class Meta:
@@ -15,10 +23,7 @@ class ItineraireForm(forms.ModelForm):
         fields = '__all__'
 
 
-class JourForm(forms.ModelForm):
-    class Meta:
-        model = Jour
-        fields = '__all__'
+
 
 class DeplacementForm(forms.ModelForm):
     class Meta:

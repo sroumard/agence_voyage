@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Carte des Hôtels
+{% endblock %}
+
+{% block content %}
+    <h2>Carte des Hôtels</h2>
+    
+    <!-- Carte interactive -->
+    <div id="map"></div>
+    <style>
+        #map {
+            height: 500px;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+    </style>
+
+    <!-- Formulaire d'enregistrement -->
+    <form id="hotel-form" method="POST" action="{% url 'enregistrer_hotel' %}">
+        {% csrf_token %}
+        <label for="nom">Nom de l'hôtel :</label>
+        <input type="text" id="nom" name="nom" readonly required><br>
+
+        <label for="latitude">Latitude :</label>
+        <input type="text" id="latitude" name="latitude" readonly required><br>
+
+        <label for="longitude">Longitude :</label>
+        <input type="text" id="longitude" name="longitude" readonly required><br>
+
+        <label for="description">Description :</label>
+        <textarea id="description" name="description"></textarea><br>
+        <button type="submit">Enregistrer l'hôtel</button>
+    </form>
+
+    <!-- Carte interactive avec Leaflet.js -->
+    <script>
+        // Initialisation de la carte
+        var map = L.map('map').setView([-8.5, 115.3522], 10); // Coordonnées de Bali
+
+        // Ajouter les tuiles OpenStreetMap
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors',
+            maxZoom: 19,
+        }).addTo(map);
+
+        // Ajouter les hôtels depuis le backend
+        var hotels = {{ hotels|safe }};  // Données passées depuis la vue Django
+
+        hotels.forEach(hotel => {
+            if (hotel.lat && hotel.lon) {
+                // Ajouter un marqueur pour chaque hôtel
+                L.marker([hotel.lat, hotel.lon])
+                    .addTo(map)
+                    .bindPopup(`
+                        <b>${hotel.tags.name || 'Nom inconnu'}</b><br>
+                        <button onclick="selectHotel('${hotel.tags.name || ''}', ${hotel.lat}, ${hotel.lon}, '${hotel.tags.description || ''}')">
+                            Sélectionner cet hôtel
+                        </button>
+                    `);
+            }
+        });
+
+        // Fonction pour remplir le formulaire avec les informations d'un hôtel sélectionné
+        function selectHotel(name, lat, lon, description) {
+            document.getElementById('nom').value = name;
+            document.getElementById('latitude').value = lat;
+            document.getElementById('longitude').value = lon;
+            document.getElementById('description').value = description;
+        }
+    </script>
+{% endblock %}
