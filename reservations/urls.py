@@ -12,7 +12,11 @@ router.register(r'jours', views.JourViewSet)
 router.register(r'deplacements', views.DeplacementViewSet)
 
 urlpatterns = [
-    path('', views.verifier_disponibilites, name='verifier_disponibilites'),
+    path('', views.home, name='home'),
+    path('login/', views.CustomLoginView.as_view(), name='login'),
+    path('logout/', views.logout_view, name='logout'),
+    path('register/', views.register, name='register'),
+
     path('creer_client/', views.creer_client, name='creer_client'),
     path('clients/<int:client_id>/creer_itineraire/', views.creer_itineraire, name='creer_itineraire'),
     path('itineraires/<int:itineraire_id>/finaliser/', views.finaliser_itineraire, name='finaliser_itineraire'),

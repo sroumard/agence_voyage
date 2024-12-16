@@ -1,15 +1,47 @@
 from django.shortcuts import redirect, render, get_object_or_404
 from django.http import JsonResponse, HttpResponseRedirect,HttpResponse
 from .models import Client, Itineraire, Hotel, Activite, Jour, Deplacement
-from .forms import ClientForm, ItineraireForm
+from .forms import ClientForm, ItineraireForm, UserRegistrationForm
 from datetime import date, datetime
 from rest_framework import viewsets, generics
 from rest_framework.response import Response
 from .serializers import ClientSerializer, ItineraireSerializer, HotelSerializer, ActiviteSerializer, JourSerializer, DeplacementSerializer
-
+from django.contrib import messages
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 from io import BytesIO
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.views import LoginView, LogoutView
+from django.urls import reverse_lazy
+from django.contrib.auth import logout
+
+def home(request):
+    return render(request, 'reservations/home.html')
+
+def register(request) :
+    if request.method =="POST" :
+        form = UserRegistrationForm(request.POST)
+        if form.is_valid() :
+            form.save()
+            username = form.cleaned_data.get('username')
+            messages.success(request, f' Count create for {username} ! Vous pouvez maintenant vous connecter.')
+            return redirect("home")
+    else : 
+        form = UserRegistrationForm(request.POST)
+    
+    return render (request, "reservations/register.html", {"form" : form} )
+         
+
+class CustomLoginView(LoginView):
+    template_name = 'reservations/login.html'  # Le template HTML à utiliser
+    redirect_authenticated_user = True  # Redirige si l'utilisateur est déjà connecté
+    next_page = reverse_lazy('home')  # Redirige après connexion (remplacez 'home' par le nom de votre vue d'accueil)
+
+
+def logout_view(request):
+    if request.method == "GET":
+        logout(request)
+        return redirect('home')  # Redirige vers la page de connexion après déconnexion
 
 
 def creer_client(request) :
@@ -21,7 +53,7 @@ def creer_client(request) :
     else:
         form = ClientForm(request.POST)
 
-    return render (request,'reservations/creer_client.html', {'form' : form} )
+    return render (request,'creer_client.html', {'form' : form} )
 
 
 

@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %} Accueil {% endblock %}
+
+{% block content %}
+
+<header>
+    <h1>Welcome to our travel management platform!</h1>
+</header>
+<main>
+    <p>Log in to manage your itineraries, bookings and more.</p>
+    <a href= "{% url 'login' %}">Login</a>
+    <a href= "{% url 'register' %}">Create an account</a>
+</main>
+
+
+{% endblock %}
