@@ -43,6 +43,26 @@ def logout_view(request):
         logout(request)
         return redirect('home')  # Redirige vers la page de connexion après déconnexion
 
+def dashboard(request):
+    return render(request, 'dashboard.html')
+"""
+def dashboard(request) :
+    if request.method =="GET":
+        hotels = Hotel.get_object_or_404.all()
+        deplacements = Deplacement.get_object_or_404.all()
+        clients = Client.get_object_or_404.all()
+        itineraires = Itineraire.get_object_or_404.all()
+
+        data= {
+            "hotels" : hotels,
+            "deplacements" : deplacements,
+            "clients" : clients,
+            "itineraires" : itineraires
+        }
+    return render(request,'reservations/dashboard.html',data)
+
+"""
+
 
 def creer_client(request) :
     if request.method == "POST" :
@@ -122,7 +142,7 @@ def gestion_transport(request, itineraire_id):
 
 import requests
 
-def afficher_hotel(request):
+def ajouter_hotels(request):
     # Définir la requête Overpass API pour récupérer les hôtels
     overpass_url = "https://overpass-api.de/api/interpreter"
     query = """
@@ -143,7 +163,39 @@ def afficher_hotel(request):
         print(f"Erreur lors de la récupération des données : {e}")
     
     # Passer les données au template
-    return render(request, 'reservations/afficher_hotel.html', {'hotels': hotels})
+    return render(request, 'reservations/ajouter_hotels.html', {'hotels': hotels})
+
+
+def afficher_hotels(request) : 
+    if request.method =="GET":
+        hotels = Hotel.get_object_or_404.all()
+    return render(request,'reservations/afficher_hotels.html',{"Hotels" :hotels})
+
+def afficher_deplacements(request) : 
+    if request.method =="GET":
+        deplacements = Deplacement.get_object_or_404.all()
+    return render(request,'reservations/afficher_deplacements.html',{"Transport" :deplacements})
+
+def afficher_clients(request):
+    if request.method =="GET":
+        clients = Client.get_object_or_404.all()
+    return render(request,'reservations/afficher_clients.html',{"Customers" : clients})
+def afficher_itineraires(request): 
+    if request.method =="GET":
+        itineraires = Itineraire.get_object_or_404.all()
+    return render(request,'reservations/afficher_itineraires.html',{"Hotels" : itineraires})   
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

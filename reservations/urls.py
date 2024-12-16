@@ -21,7 +21,7 @@ urlpatterns = [
     path('clients/<int:client_id>/creer_itineraire/', views.creer_itineraire, name='creer_itineraire'),
     path('itineraires/<int:itineraire_id>/finaliser/', views.finaliser_itineraire, name='finaliser_itineraire'),
     path('itineraires/<int:itineraire_id>/transport/', views.gestion_transport, name='gestion_transport'),
-    path('afficher_hotel/', views.afficher_hotel, name='afficher_hotel'),
+    path('ajouter_hotels/', views.ajouter_hotels, name='ajouter_hotels'),
     path('enregistrer_hotel/', views.enregistrer_hotel, name='enregistrer_hotel'),  # Nouveau chemin
     path('facture/<int:itineraire_id>/', views.generer_facture_PDF, name='generer_facture'),
 
