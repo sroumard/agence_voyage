@@ -14,7 +14,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView, LogoutView
 from django.urls import reverse_lazy
 from django.contrib.auth import logout
-
+from django.core.paginator import Paginator
 def home(request):
     return render(request, 'reservations/home.html')
 
@@ -44,7 +44,7 @@ def logout_view(request):
         return redirect('home')  # Redirige vers la page de connexion après déconnexion
 
 def dashboard(request):
-    return render(request, 'dashboard.html')
+    return render(request, 'reservations/dashboard.html')
 """
 def dashboard(request) :
     if request.method =="GET":
@@ -177,9 +177,17 @@ def afficher_deplacements(request) :
     return render(request,'reservations/afficher_deplacements.html',{"Transport" :deplacements})
 
 def afficher_clients(request):
-    if request.method =="GET":
-        clients = Client.get_object_or_404.all()
-    return render(request,'reservations/afficher_clients.html',{"Customers" : clients})
+    search_query = request.GET.get('search', '')
+    clients = Client.objects.filter(nom__icontains=search_query)  # Filtrer les clients par nom
+    paginator = Paginator(clients, 10)  # Pagination avec 10 clients par page
+
+    page_number = request.GET.get('page')  # Numéro de page
+    page_obj = paginator.get_page(page_number)  # Récupérer la page
+    return render(request,'reservations/afficher_clients.html',{
+        "page_obj": page_obj, 
+        "search_query": search_query
+        })
+
 def afficher_itineraires(request): 
     if request.method =="GET":
         itineraires = Itineraire.get_object_or_404.all()

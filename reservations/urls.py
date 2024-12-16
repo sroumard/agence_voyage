@@ -16,6 +16,13 @@ urlpatterns = [
     path('login/', views.CustomLoginView.as_view(), name='login'),
     path('logout/', views.logout_view, name='logout'),
     path('register/', views.register, name='register'),
+    path('dashboard/', views.dashboard, name='dashboard'),
+    path('afficher_hotels/', views.afficher_hotels, name='afficher_hotels'),
+    path('afficher_deplacements/', views.afficher_deplacements, name='afficher_deplacements'),
+    path('afficher_itineraires/', views.afficher_itineraires, name='afficher_itineraires'),
+    path('afficher_clients/', views.afficher_clients, name='afficher_clients'),
+ 
+
 
     path('creer_client/', views.creer_client, name='creer_client'),
     path('clients/<int:client_id>/creer_itineraire/', views.creer_itineraire, name='creer_itineraire'),

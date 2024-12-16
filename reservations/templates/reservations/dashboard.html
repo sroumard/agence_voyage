@@ -9,11 +9,10 @@
 </header>
 <main>
     <div class="menu">
-
-        <button onclick="location.href='{% url 'afficher_hotels %}'">Hotels</button>
-        <button onclick="location.href='{% url 'afficher_deplacements' %}'">Transport</button>
-        <button onclick="location.href='{% url 'afficher_itineraires' %}'">Itinerary</button>
-        <button onclick="location.href='{% url 'afficher_clients' %}'">Customers</button>
+        <button href= "{ % url 'afficher_hotels' %}">Hotels</button>
+        <button href= "{% url 'afficher_deplacements' %}">Transport</button>
+        <button href= "{% url 'afficher_itineraires' %}" >Itinerary</button>
+        <button href="{% url 'afficher_clients' %}">Customers</button>
     </div>
 
 

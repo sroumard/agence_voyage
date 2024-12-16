@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Carte des Hôtels
+{% endblock %}
+
+{% block content %}
+    <h1>List of customers</h1>
+    <form method="get" action="{% url 'afficher_clients' %}">
+        <input type="text" name ="search" placeholder="Research customers by name" value ="{{ Hotels }}">
+        <button type="submit">Research</button>
+    </form>
+
+    <!-- Tableau des clients -->
+     <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Number of adult</th>
+                <th>Number of  child</th>
+                <th>Length of stay</th>
+                <th>Budget</th>
+                <th>Email</th>
+            </tr>
+        </thead>
+
+        <tbody> 
+            {% for client in page_obj %}
+            <tr>
+                <td>{{ client.id }}</td>
+                <td>{{ client.nom }}</td>
+                <td>{{ client.nombre_adultes }}</td>
+                <td>{{ client.nombre_enfants }}</td>
+                <td>{{ client.duree_sejour }}</td>
+                <td>{{ client.budget }}</td>
+                <td>{{ client.email }}</td>
+            </tr>
+            {% empty %}
+
+            <tr>
+                <td colspan="4">No customers found.</td>
+            </tr>
+                {% endfor %}
+        </tbody>
+
+     </table>
+
+     <!-- Pagination -->
+    <div class="pagination">
+        {% if page_obj.has_previous %}
+            <a href="?search={{ search_query }}&page=1">First</a>
+            <a href="?search={{ search_query }}&page={{ page_obj.previous_page_number }}">Previous</a>
+        {% endif %}
+
+        <span>Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }}</span>
+
+        {% if page_obj.has_next %}
+            <a href="?search={{ search_query }}&page={{ page_obj.next_page_number }}">Next</a>
+            <a href="?search={{ search_query }}&page={{ page_obj.paginator.num_pages }}">Last</a>
+        {% endif %}
+    </div>
+
+    {% endblock %}
