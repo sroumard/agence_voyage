@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}
+Carte des Hôtels
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+    <h1>List of customers</h1>
+
+    <!-- Formulaire de recherche -->
+    <form method="get" action="{% url 'afficher_itineraires' %}">
+        <div class="row">
+            <div class="col-md-10">
+                <input class="form-control" 
+                       type="text" 
+                       name="search" 
+                       placeholder="Research customers by name" 
+                       value="{{ search_query }}">
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-light w-100">Research</button>
+            </div>
+        </div>
+    </form>
+
+    <!-- Tableau des itineraires -->
+    <table class="table table-striped mt-4">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>duration</th>
+                <th>Begin</th>
+                <th>end</th>
+                <th>Customer</th>
+              
+                <th>price</th>                
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for itineraire in itineraires %}
+            <tr>
+                <td>{{ itineraire.id }}</td>
+                <td>{{ itineraire.nom }}</td>
+                <td>{{ itineraire.duree }}</td>
+                <td>{{ itineraire.debut }}</td>
+                <td>{{ itineraire.fin }}</td>
+                <td>{{ itineraire.client.nom }}</td>
+                <td>{{ itineraire.tarif }}</td>
+
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7" class="text-center">No itinerary found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Pagination -->
+    <div class="pagination d-flex justify-content-center">
+        {% if itineraires.has_previous %}
+        <a class="btn btn-outline-secondary mx-1" href="?search={{ search_query }}&page=1">First</a>
+        <a class="btn btn-outline-secondary mx-1" href="?search={{ search_query }}&page={{ itineraires.previous_page_number }}">Previous</a>
+        {% endif %}
+
+        <span class="mx-2 align-self-center">Page {{ itineraires.number }} of {{ itineraires.paginator.num_pages }}</span>
+
+        {% if itineraires.has_next %}
+        <a class="btn btn-outline-secondary mx-1" href="?search={{ search_query }}&page={{ itineraires.next_page_number }}">Next</a>
+        <a class="btn btn-outline-secondary mx-1" href="?search={{ search_query }}&page={{ itineraires.paginator.num_pages }}">Last</a>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

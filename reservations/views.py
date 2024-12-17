@@ -106,10 +106,9 @@ def verifier_disponibilites(request):
 
 
 
-
 def creer_itineraire(request, client_id):
     client = get_object_or_404(Client, id=client_id)
-    if request.method == "POST":
+    if request.method == "POST" :
         form = ItineraireForm(request.POST)
         if form.is_valid():
             itineraire = form.save(commit=False)
@@ -163,35 +162,75 @@ def ajouter_hotels(request):
         print(f"Erreur lors de la récupération des données : {e}")
     
     # Passer les données au template
-    return render(request, 'reservations/ajouter_hotels.html', {'hotels': hotels})
+    return render(request, 'reservations/ajouter_hotel.html', {'hotels': hotels})
 
 
 def afficher_hotels(request) : 
-    if request.method =="GET":
-        hotels = Hotel.get_object_or_404.all()
-    return render(request,'reservations/afficher_hotels.html',{"Hotels" :hotels})
+    search_query = request.GET.get('search', '')
+    hotels = Hotel.objects.filter(nom__icontains=search_query)  # Filtrer les hotels par nom
+    paginator = Paginator(hotels, 10)  # Pagination avec 10 hotels par page
+    page_number = request.GET.get('page')  # Numéro de page
+    page_obj = paginator.get_page(page_number)  # Récupérer la page
+
+
+    # Définir la requête Overpass API pour récupérer les hôtels
+    overpass_url = "https://overpass-api.de/api/interpreter"
+    query = """
+    [out:json];
+    node["tourism"="hotel"](-8.8,114.224199,-8.1,116.469920);  // Zone autour de bali
+    out;
+    """
+    try:
+        response = requests.get(overpass_url, params={'data': query})
+        response.raise_for_status()  # Vérifie si la requête a réussi
+        hotels_map = response.json().get("elements", [])
+        nom_hotel = request.GET.get('nom',None)
+        if nom_hotel:
+            hotels_map = [hotel for hotel in hotels_map if nom_hotel.lower() in hotel.get('tags', {}).get('name', '').lower()]
+# lower pour convertir en miniscule et tags c'est un mot clé dans l'api ducoup on filtre avec dictionnaire du dictionnaire
+    except requests.RequestException as e:
+        hotels_map = []  # En cas d'erreur, aucune donnée n'est renvoyée
+        print(f"Erreur lors de la récupération des données : {e}")
+    
+    # Passer les données au template
+    return render(request,'reservations/afficher_hotels.html',{
+        "hotels": page_obj, 
+        "search_query": search_query,
+        'hotels_map': hotels_map
+        })
 
 def afficher_deplacements(request) : 
-    if request.method =="GET":
-        deplacements = Deplacement.get_object_or_404.all()
-    return render(request,'reservations/afficher_deplacements.html',{"Transport" :deplacements})
+    search_query = request.GET.get('search', '')
+    deplacements = Deplacement.objects.filter(nom__icontains=search_query)
+    paginator = Paginator(deplacements, 10)  # Pagination avec 10 clients par page
+    page_number = request.GET.get('page')  # Numéro de page
+    page_obj = paginator.get_page(page_number)  # Récupérer la page
+    return render(request,'reservations/afficher_deplacements.html',{
+        "deplacements": page_obj, 
+        "search_query": search_query
+        })
 
 def afficher_clients(request):
     search_query = request.GET.get('search', '')
     clients = Client.objects.filter(nom__icontains=search_query)  # Filtrer les clients par nom
     paginator = Paginator(clients, 10)  # Pagination avec 10 clients par page
-
     page_number = request.GET.get('page')  # Numéro de page
     page_obj = paginator.get_page(page_number)  # Récupérer la page
     return render(request,'reservations/afficher_clients.html',{
-        "page_obj": page_obj, 
+        "clients": page_obj, 
         "search_query": search_query
         })
 
 def afficher_itineraires(request): 
-    if request.method =="GET":
-        itineraires = Itineraire.get_object_or_404.all()
-    return render(request,'reservations/afficher_itineraires.html',{"Hotels" : itineraires})   
+    search_query = request.GET.get('search', '')
+    itineraires = Itineraire.objects.filter(nom__icontains=search_query)
+    paginator = Paginator(itineraires, 10)  # Pagination avec 10 clients par page
+    page_number = request.GET.get('page')  # Numéro de page
+    page_obj = paginator.get_page(page_number)  # Récupérer la page
+    return render(request,'reservations/afficher_itineraires.html',{
+        "itineraires": page_obj, 
+        "search_query": search_query
+        })  
 
 
 
@@ -221,7 +260,9 @@ def enregistrer_hotel(request):
             longitude=longitude,
         )
 
-        return redirect('afficher_hotel')  # Redirige vers la carte après l'enregistrement
+        return HttpResponse(status=204)
+
+
 
 
 

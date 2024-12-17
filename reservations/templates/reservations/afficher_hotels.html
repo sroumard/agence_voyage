@@ -1,11 +1,82 @@
 {% extends "base.html" %}
 
 {% block title %}
-    Carte des Hôtels
+Carte des Hôtels
 {% endblock %}
 
 {% block content %}
-    <h2>Carte des Hôtels</h2>
+
+<div class="container">
+    <h1>List of Hotels</h1>
+
+    <!-- Formulaire de recherche -->
+    <form method="get" action="{% url 'afficher_hotels' %}">
+        <div class="row">
+            <div class="col-md-10">
+                <input class="form-control" 
+                       type="text" 
+                       name="search" 
+                       placeholder="Research Hotels by name" 
+                       value="{{ search_query }}">
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-light w-100">Research</button>
+            </div>
+        </div>
+    </form>
+
+    <!-- Tableau des hotels -->
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Latitude</th>
+                <th>Longitude</th>
+                <th>Note</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for hotel in hotels %}
+            <tr>
+                <td>{{ hotel.id }}</td>
+                <td>{{ hotel.nom }}</td>
+                <td>{{ hotel.description }}</td>
+                <td>{{ hotel.longitude }}</td>
+                <td>{{ hotel.latitude }}</td>
+                <td>{{ hotel.note }}</td>
+            </tr>
+            {% empty %}
+
+            <tr>
+                <td colspan="4">No Hotels found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+
+    </table>
+
+    <!-- Pagination -->
+        <!-- Pagination -->
+        <div class="pagination d-flex justify-content-center">
+            {% if hotels.has_previous %}
+            <a class="btn btn-outline-secondary mx-1" href="?search={{ search_query }}&page=1">First</a>
+            <a class="btn btn-outline-secondary mx-1" href="?search={{ search_query }}&page={{ hotels.previous_page_number }}">Previous</a>
+            {% endif %}
+    
+            <span class="mx-2 align-self-center">Page {{ hotels.number }} of {{ hotels.paginator.num_pages }}</span>
+    
+            {% if hotels.has_next %}
+            <a class="btn btn-outline-secondary mx-1" href="?search={{ search_query }}&page={{ hotels.next_page_number }}">Next</a>
+            <a class="btn btn-outline-secondary mx-1" href="?search={{ search_query }}&page={{ hotels.paginator.num_pages }}">Last</a>
+            {% endif %}
+        </div>
+    </div>
+
+
+    <h1>Hotels map</h1>
     
     <!-- Carte interactive -->
     <div id="map"></div>
@@ -23,11 +94,11 @@
             <div class="col-md-6">
                 <form id="hotel-form" method="POST" action="{% url 'enregistrer_hotel' %}" class="p-4 border rounded shadow-sm bg-light">
                     {% csrf_token %}
-                    <h4 class="mb-4 text-center">Enregistrer un Hôtel</h4>
+                    <h4 class="mb-4 text-center">Save Hotel</h4>
                     
                     <!-- Nom de l'hôtel -->
                     <div class="mb-3">
-                        <label for="nom" class="form-label">Nom de l'hôtel :</label>
+                        <label for="nom" class="form-label">Hotel name :</label>
                         <input type="text" id="nom" name="nom" class="form-control" readonly required>
                     </div>
                     
@@ -51,7 +122,7 @@
                     
                     <!-- Submit Button -->
                     <div class="d-grid">
-                        <button type="submit" class="btn btn-primary">Enregistrer l'hôtel</button>
+                        <button type="submit" class="btn btn-primary">Save hotel</button>
                     </div>
                 </form>
             </div>
@@ -71,9 +142,9 @@
         }).addTo(map);
 
         // Ajouter les hôtels depuis le backend
-        var hotels = {{ hotels|safe }};  // Données passées depuis la vue Django
+        var hotels_map = {{ hotels_map|safe }};  // Données passées depuis la vue Django
 
-        hotels.forEach(hotel => {
+        hotels_map.forEach(hotel => {
             if (hotel.lat && hotel.lon) {
                 // Ajouter un marqueur pour chaque hôtel
                 L.marker([hotel.lat, hotel.lon])
@@ -95,4 +166,4 @@
             document.getElementById('description').value = description;
         }
     </script>
-{% endblock %}
+    {% endblock %}

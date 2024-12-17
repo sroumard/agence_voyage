@@ -10,7 +10,7 @@ Carte des Hôtels
     <h1>List of customers</h1>
 
     <!-- Formulaire de recherche -->
-    <form method="get" action="{% url 'afficher_clients' %}">
+    <form method="get" action="{% url 'afficher_deplacements' %}">
         <div class="row">
             <div class="col-md-10">
                 <input class="form-control" 
@@ -25,30 +25,28 @@ Carte des Hôtels
         </div>
     </form>
 
-    <!-- Tableau des clients -->
+    <!-- Tableau des deplacements -->
     <table class="table table-striped mt-4">
         <thead>
             <tr>
                 <th>ID</th>
                 <th>Name</th>
-                <th>Number of adults</th>
-                <th>Number of children</th>
-                <th>Length of stay</th>
-                <th>Budget</th>
-                <th>Email</th>
+                <th>type</th>
+                <th>price</th>
+                <th>capacty</th>
+                
             </tr>
         </thead>
 
         <tbody>
-            {% for client in clients %}
+            {% for deplacement in deplacements %}
             <tr>
-                <td>{{ client.id }}</td>
-                <td>{{ client.nom }}</td>
-                <td>{{ client.nombre_adultes }}</td>
-                <td>{{ client.nombre_enfants }}</td>
-                <td>{{ client.duree_sejour }}</td>
-                <td>{{ client.budget }}</td>
-                <td>{{ client.email }}</td>
+                <td>{{ deplacement.id }}</td>
+                <td>{{ deplacement.nom }}</td>
+                <td>{{ deplacement.type }}</td>
+                <td>{{ deplacement.tarif }}</td>
+                <td>{{ deplacement.duree_sejour }}</td>
+                <td>{{ deplacement.capacite }}</td>
             </tr>
             {% empty %}
             <tr>
@@ -60,16 +58,16 @@ Carte des Hôtels
 
     <!-- Pagination -->
     <div class="pagination d-flex justify-content-center">
-        {% if clients.has_previous %}
+        {% if deplacements.has_previous %}
         <a class="btn btn-outline-secondary mx-1" href="?search={{ search_query }}&page=1">First</a>
-        <a class="btn btn-outline-secondary mx-1" href="?search={{ search_query }}&page={{ clients.previous_page_number }}">Previous</a>
+        <a class="btn btn-outline-secondary mx-1" href="?search={{ search_query }}&page={{ deplacements.previous_page_number }}">Previous</a>
         {% endif %}
 
-        <span class="mx-2 align-self-center">Page {{ clients.number }} of {{ clients.paginator.num_pages }}</span>
+        <span class="mx-2 align-self-center">Page {{ deplacements.number }} of {{ deplacements.paginator.num_pages }}</span>
 
-        {% if clients.has_next %}
-        <a class="btn btn-outline-secondary mx-1" href="?search={{ search_query }}&page={{ clients.next_page_number }}">Next</a>
-        <a class="btn btn-outline-secondary mx-1" href="?search={{ search_query }}&page={{ clients.paginator.num_pages }}">Last</a>
+        {% if deplacements.has_next %}
+        <a class="btn btn-outline-secondary mx-1" href="?search={{ search_query }}&page={{ deplacements.next_page_number }}">Next</a>
+        <a class="btn btn-outline-secondary mx-1" href="?search={{ search_query }}&page={{ deplacements.paginator.num_pages }}">Last</a>
         {% endif %}
     </div>
 </div>
