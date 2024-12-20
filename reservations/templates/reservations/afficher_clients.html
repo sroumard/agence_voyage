@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block title %}
-Carte des Hôtels
+CUstomers list
 {% endblock %}
 
 {% block content %}
@@ -10,18 +10,17 @@ Carte des Hôtels
     <h1>List of customers</h1>
 
     <!-- Formulaire de recherche -->
-    <form method="get" action="{% url 'afficher_clients' %}">
+
+    <form  id="search-form" method="get" action="#">
         <div class="row">
             <div class="col-md-10">
                 <input class="form-control" 
                        type="text" 
+                       id="search-input"
                        name="search" 
-                       placeholder="Research customers by name" 
-                       value="{{ search_query }}">
+                       placeholder="Research customers by name" >
             </div>
-            <div class="col-md-2">
-                <button type="submit" class="btn btn-light w-100">Research</button>
-            </div>
+           
         </div>
     </form>
 
@@ -39,39 +38,72 @@ Carte des Hôtels
             </tr>
         </thead>
 
-        <tbody>
-            {% for client in clients %}
-            <tr>
-                <td>{{ client.id }}</td>
-                <td>{{ client.nom }}</td>
-                <td>{{ client.nombre_adultes }}</td>
-                <td>{{ client.nombre_enfants }}</td>
-                <td>{{ client.duree_sejour }}</td>
-                <td>{{ client.budget }}</td>
-                <td>{{ client.email }}</td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="7" class="text-center">No customers found.</td>
-            </tr>
-            {% endfor %}
+        <tbody id ="clients-table-body">
+            <!-- Contenu des clients sera injecté ici -->
         </tbody>
+
     </table>
 
-    <!-- Pagination -->
-    <div class="pagination d-flex justify-content-center">
-        {% if clients.has_previous %}
-        <a class="btn btn-outline-secondary mx-1" href="?search={{ search_query }}&page=1">First</a>
-        <a class="btn btn-outline-secondary mx-1" href="?search={{ search_query }}&page={{ clients.previous_page_number }}">Previous</a>
-        {% endif %}
-
-        <span class="mx-2 align-self-center">Page {{ clients.number }} of {{ clients.paginator.num_pages }}</span>
-
-        {% if clients.has_next %}
-        <a class="btn btn-outline-secondary mx-1" href="?search={{ search_query }}&page={{ clients.next_page_number }}">Next</a>
-        <a class="btn btn-outline-secondary mx-1" href="?search={{ search_query }}&page={{ clients.paginator.num_pages }}">Last</a>
-        {% endif %}
-    </div>
+    <!-- Pagination dynamique -->
+    <div id="pagination" class="pagination d-flex justify-content-center"></div>
 </div>
 
+
+<script>
+    const searchInput = document.getElementById("search-input");
+    const tableBody = document.getElementById("clients-table-body");
+    const paginationDiv = document.getElementById("pagination");
+    
+    function loadClients(search = "", page = 1) {
+        fetch(`/api/clients?search=${search}&page=${page}`)
+            .then(response => response.json())
+            .then(data => {
+                // Mise à jour du tableau
+                tableBody.innerHTML = "";
+                if (data.clients.length > 0) {
+                    data.clients.forEach(client => {
+                        tableBody.innerHTML += `
+                            <tr>
+                                <td>${client.id}</td>
+                                <td>${client.nom}</td>
+                                <td>${client.nombre_adultes}</td>
+                                <td>${client.nombre_enfants}</td>
+                                <td>${client.duree_sejour}</td>
+                                <td>${client.budget}</td>
+                                <td>${client.email}</td>
+                            </tr>
+                        `;
+                    });
+                } else {
+                    tableBody.innerHTML = `
+                        <tr>
+                            <td colspan="7" class="text-center">No customers found.</td>
+                        </tr>
+                    `;
+                }
+
+                 // Mise à jour de la pagination
+                 paginationDiv.innerHTML = "";
+                if (data.has_previous) {
+                    paginationDiv.innerHTML += `<button onclick="loadClients('${search}', 1)" class="btn btn-outline-secondary mx-1">First</button>`;
+                    paginationDiv.innerHTML += `<button onclick="loadClients('${search}', ${data.current_page - 1})" class="btn btn-outline-secondary mx-1">Previous</button>`;
+                }
+                paginationDiv.innerHTML += `<span class="mx-2 align-self-center">Page ${data.current_page} of ${data.num_pages}</span>`;
+                if (data.has_next) {
+                    paginationDiv.innerHTML += `<button onclick="loadClients('${search}', ${data.current_page + 1})" class="btn btn-outline-secondary mx-1">Next</button>`;
+                    paginationDiv.innerHTML += `<button onclick="loadClients('${search}', ${data.num_pages})" class="btn btn-outline-secondary mx-1">Last</button>`;
+                }
+            })
+            .catch(error => console.error("Error loading clients:", error));
+    }
+
+    // Déclencheur sur l'input de recherche
+    searchInput.addEventListener("keyup", (e) => {
+        loadClients(e.target.value);
+    });
+
+    // Chargement initial
+    loadClients();
+</script>
 {% endblock %}
+

@@ -214,13 +214,33 @@ def afficher_clients(request):
     search_query = request.GET.get('search', '')
     clients = Client.objects.filter(nom__icontains=search_query)  # Filtrer les clients par nom
     paginator = Paginator(clients, 10)  # Pagination avec 10 clients par page
-    page_number = request.GET.get('page')  # Numéro de page
+    page_number = request.GET.get('page',1)  # Numéro de page
     page_obj = paginator.get_page(page_number)  # Récupérer la page
-    return render(request,'reservations/afficher_clients.html',{
-        "clients": page_obj, 
-        "search_query": search_query
-        })
 
+    # Convertir les clients en JSON
+    clients_data = [
+        {
+            "id": client.id,
+            "nom": client.nom,
+            "nombre_adultes": client.nombre_adultes,
+            "nombre_enfants": client.nombre_enfants,
+            "duree_sejour": client.duree_sejour,
+            "budget": client.budget,
+            "email": client.email,
+        } for client in page_obj
+    ]
+
+    return JsonResponse({
+        "clients" : clients_data,
+        "has_previous" : page_obj.has_previous(),
+        "has_next" : page_obj.has_next(),
+        "current_page" : page_obj.number,
+        "num_pages" : paginator.num_pages,
+    })
+
+def afficher_clients_page(request):
+    return render(request, 'reservations/afficher_clients.html')
+ 
 def afficher_itineraires(request): 
     search_query = request.GET.get('search', '')
     itineraires = Itineraire.objects.filter(nom__icontains=search_query)

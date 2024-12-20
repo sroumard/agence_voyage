@@ -20,7 +20,7 @@ urlpatterns = [
     path('afficher_hotels/', views.afficher_hotels, name='afficher_hotels'),
     path('afficher_deplacements/', views.afficher_deplacements, name='afficher_deplacements'),
     path('afficher_itineraires/', views.afficher_itineraires, name='afficher_itineraires'),
-    path('afficher_clients/', views.afficher_clients, name='afficher_clients'),
+    path('afficher_clients/', views.afficher_clients_page, name='afficher_clients_page'),
 
 
     path('creer_client/', views.creer_client, name='creer_client'),
@@ -31,6 +31,6 @@ urlpatterns = [
     path('enregistrer_hotel/', views.enregistrer_hotel, name='enregistrer_hotel'),  # Nouveau chemin
     path('facture/<int:itineraire_id>/', views.generer_facture_PDF, name='generer_facture'),
 
-
+    path('api/clients/', views.afficher_clients, name='afficher_clients'),
     path('api/', include(router.urls)),  # API Rest
 ]
