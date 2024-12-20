@@ -9,14 +9,13 @@
 </header>
 <main>
     <div class="menu">
-        <button href= "{ % url 'afficher_hotels' %}">Hotels</button>
-        <button href= "{% url 'afficher_deplacements' %}">Transport</button>
-        <button href= "{% url 'afficher_itineraires' %}" >Itinerary</button>
-        <button href="{% url 'afficher_clients' %}">Customers</button>
+        <a href="{% url 'afficher_hotels' %}"><button>Hotels</button></a>
+    <a href="{% url 'afficher_deplacements' %}"><button>Transport</button></a>
+    <a href="{% url 'afficher_itineraires' %}"><button>Itinerary</button></a>
+    <a href="{% url 'afficher_clients_page' %}"><button>Customers</button></a>
     </div>
 
 
-    </div>
 </main>
 
 

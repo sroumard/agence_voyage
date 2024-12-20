@@ -35,7 +35,7 @@ def register(request) :
 class CustomLoginView(LoginView):
     template_name = 'reservations/login.html'  # Le template HTML à utiliser
     redirect_authenticated_user = True  # Redirige si l'utilisateur est déjà connecté
-    next_page = reverse_lazy('home')  # Redirige après connexion (remplacez 'home' par le nom de votre vue d'accueil)
+    next_page = reverse_lazy('dashboard')  # Redirige après connexion (remplacez 'home' par le nom de votre vue d'accueil)
 
 
 def logout_view(request):
@@ -43,6 +43,7 @@ def logout_view(request):
         logout(request)
         return redirect('home')  # Redirige vers la page de connexion après déconnexion
 
+@login_required
 def dashboard(request):
     return render(request, 'reservations/dashboard.html')
 """
@@ -164,7 +165,7 @@ def ajouter_hotels(request):
     # Passer les données au template
     return render(request, 'reservations/ajouter_hotel.html', {'hotels': hotels})
 
-
+@login_required
 def afficher_hotels(request) : 
     search_query = request.GET.get('search', '')
     hotels = Hotel.objects.filter(nom__icontains=search_query)  # Filtrer les hotels par nom
