@@ -21,6 +21,7 @@ urlpatterns = [
     path('afficher_deplacements/', views.afficher_deplacements, name='afficher_deplacements'),
     path('afficher_itineraires/', views.afficher_itineraires, name='afficher_itineraires'),
     path('afficher_clients/', views.afficher_clients_page, name='afficher_clients_page'),
+    path('modifier_client/<int:client_id>/', views.modifier_client, name='modifier_client'),
 
 
     path('creer_client/', views.creer_client, name='creer_client'),

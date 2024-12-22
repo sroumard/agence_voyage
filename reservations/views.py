@@ -70,11 +70,11 @@ def creer_client(request) :
         form = ClientForm(request.POST)
         if form.is_valid() :
             form.save()
-            return HttpResponseRedirect('/')
+            return HttpResponseRedirect('dashboard')
     else:
         form = ClientForm(request.POST)
 
-    return render (request,'creer_client.html', {'form' : form} )
+    return render (request,'reservations/creer_client.html', {'form' : form} )
 
 
 
@@ -199,6 +199,20 @@ def afficher_hotels(request) :
         "search_query": search_query,
         'hotels_map': hotels_map
         })
+
+def modifier_client(request, client_id):
+    client = get_object_or_404(Client, id=client_id)
+
+    if request.method == 'POST':
+        form = ClientForm(request.POST, instance=client)
+        if form.is_valid():
+            form.save()
+            return redirect('dashboard')
+    else:
+        form = ClientForm(instance=client)
+    return render(request, 'reservations/modifier_client.html', {'form': form})
+
+
 
 def afficher_deplacements(request) : 
     search_query = request.GET.get('search', '')

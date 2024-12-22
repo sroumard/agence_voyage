@@ -24,6 +24,14 @@ CUstomers list
         </div>
     </form>
 
+    <!-- Bouton pour ajouter un nouveau client -->
+    <a href="{% url 'creer_client' %}"><button id="add-customer-btn" class="btn btn-primary mt-4" >Add New Customer</button></a>
+
+    <!-- Conteneur pour le formulaire -->
+    <div id="add-customer-form-container" class="mt-3" style="display: none;">
+        <!-- Le formulaire sera injecté ici -->
+    </div>
+
     <!-- Tableau des clients -->
     <table class="table table-striped mt-4">
         <thead>
@@ -104,6 +112,8 @@ CUstomers list
 
     // Chargement initial
     loadClients();
+
+    
 </script>
 {% endblock %}
 
