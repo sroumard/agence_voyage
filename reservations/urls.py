@@ -24,6 +24,8 @@ urlpatterns = [
     path('afficher_deplacements/', views.afficher_deplacements_page, name='afficher_deplacements_page'),
 
     path('modifier_client/<int:client_id>/', views.modifier_client, name='modifier_client'),
+    path('modifier_deplacement/<int:deplacement_id>/', views.modifier_deplacement, name='modifier_deplacement'),
+
     path('api/clients/<int:client_id>/delete', views.supprimer_client, name='supprimer_client'),
     path('api/deplacements/<int:deplacement_id>/delete', views.supprimer_deplacement, name='supprimer_deplacement'),
 

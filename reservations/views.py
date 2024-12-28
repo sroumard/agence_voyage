@@ -208,6 +208,18 @@ def modifier_client(request, client_id):
         form = ClientForm(instance=client)
     return render(request, 'reservations/modifier_client.html', {'form': form})
 
+def modifier_deplacement(request, deplacement_id):
+    deplacement = get_object_or_404(Deplacement, id=deplacement_id)
+
+    if request.method == 'POST':
+        form = DeplacementForm(request.POST, instance=deplacement)
+        if form.is_valid():
+            form.save()
+            return redirect('afficher_deplacements_page')
+    else:
+        form = DeplacementForm(instance=deplacement)
+    return render(request, 'reservations/modifier_deplacement.html', {'form': form})
+
 def supprimer_client(request, client_id) :
     if request.method == "DELETE" :    
         client = get_object_or_404(Client, id = client_id)
