@@ -2,7 +2,7 @@ from django.shortcuts import redirect, render, get_object_or_404
 from django.http import JsonResponse, HttpResponseRedirect,HttpResponse
 import requests
 from .models import Client, Itineraire, Hotel, Activite, Jour, Deplacement
-from .forms import ClientForm, ItineraireForm, UserRegistrationForm
+from .forms import ClientForm, DeplacementForm, ItineraireForm, UserRegistrationForm
 from datetime import date, datetime
 from rest_framework import viewsets, generics
 from rest_framework.response import Response
@@ -47,31 +47,26 @@ def logout_view(request):
 @login_required
 def dashboard(request):
     return render(request, 'reservations/dashboard.html')
-"""
-def dashboard(request) :
-    if request.method =="GET":
-        hotels = Hotel.get_object_or_404.all()
-        deplacements = Deplacement.get_object_or_404.all()
-        clients = Client.get_object_or_404.all()
-        itineraires = Itineraire.get_object_or_404.all()
 
-        data= {
-            "hotels" : hotels,
-            "deplacements" : deplacements,
-            "clients" : clients,
-            "itineraires" : itineraires
-        }
-    return render(request,'reservations/dashboard.html',data)
 
-"""
+@login_required
+def creer_deplacement(request) :
+    if request.method == "POST" :
+        form = DeplacementForm(request.POST)
+        if form.is_valid() :
+            form.save()
+            return redirect('afficher_deplacements_page')
+    else:
+        form = DeplacementForm(request.POST)
 
+    return render (request,'reservations/creer_deplacement.html', {'form' : form} )
 @login_required
 def creer_client(request) :
     if request.method == "POST" :
         form = ClientForm(request.POST)
         if form.is_valid() :
             form.save()
-            return HttpResponseRedirect('dashboard')
+            return redirect('afficher_clients_page')
     else:
         form = ClientForm(request.POST)
 
@@ -221,18 +216,40 @@ def supprimer_client(request, client_id) :
         return redirect('dashboard')
     return render(request, 'reservations/supprimer_client.html')
 
+def supprimer_deplacement(request, deplacement_id) :
+    if request.method == "DELETE" :    
+        deplacement = get_object_or_404(Deplacement, id = deplacement_id)
+        deplacement.delete()
+        messages.success(request, 'Transport deleted successfully.')
+        return redirect('dashboard')
+    return render(request, 'reservations/supprimer_deplacement.html')
 
 def afficher_deplacements(request) : 
     search_query = request.GET.get('search', '')
-    deplacements = Deplacement.objects.filter(nom__icontains=search_query)
+    deplacements = Deplacement.objects.filter(nom__icontains=search_query)  # Filtrer les deplacements par nom
     paginator = Paginator(deplacements, 10)  # Pagination avec 10 clients par page
-    page_number = request.GET.get('page')  # Numéro de page
+    page_number = request.GET.get('page',1)  # Numéro de page
     page_obj = paginator.get_page(page_number)  # Récupérer la page
-    return render(request,'reservations/afficher_deplacements.html',{
-        "deplacements": page_obj, 
-        "search_query": search_query
-        })
 
+    # Convertir les clients en JSON
+    deplacements_data = [
+        {
+            "id": deplacement.id,
+            "name": deplacement.nom,
+            "type": deplacement.type,
+            "price": deplacement.tarif_journalier,
+            "capacity": deplacement.capacite,
+    
+        } for deplacement in page_obj
+    ]
+
+    return JsonResponse({
+        "deplacements" : deplacements_data,
+        "has_previous" : page_obj.has_previous(),
+        "has_next" : page_obj.has_next(),
+        "current_page" : page_obj.number,
+        "num_pages" : paginator.num_pages,
+    })
 def afficher_clients(request):
     search_query = request.GET.get('search', '')
     clients = Client.objects.filter(nom__icontains=search_query)  # Filtrer les clients par nom
@@ -263,6 +280,9 @@ def afficher_clients(request):
 
 def afficher_clients_page(request):
     return render(request, 'reservations/afficher_clients.html')
+
+def afficher_deplacements_page(request):
+    return render(request, 'reservations/afficher_deplacements.html')
  
 def afficher_itineraires(request): 
     search_query = request.GET.get('search', '')

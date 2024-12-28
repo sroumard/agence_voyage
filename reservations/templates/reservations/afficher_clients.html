@@ -61,7 +61,7 @@ Customers List
     const csrfToken = '{{ csrf_token }}';
 
 
-    function loadClients(search = "", page = 1) {
+    function loadclients(search = "", page = 1) {
         fetch(`/api/clients?search=${search}&page=${page}`)
             .then(response => response.json())
             .then(data => {
@@ -79,8 +79,8 @@ Customers List
                                 <td>${client.budget}</td>
                                 <td>${client.email}</td>
                                 <td>
-                                    <button class="btn btn-warning" onclick="editClient(${client.id})">Edit</button>
-                                    <button class="btn btn-danger" onclick="deleteClient(${client.id})">Delete</button>
+                                    <button class="btn btn-warning" onclick="editclient(${client.id})">Edit</button>
+                                    <button class="btn btn-danger" onclick="deleteclient(${client.id})">Delete</button>
                                 </td>
                             </tr>
                         `;
@@ -96,23 +96,23 @@ Customers List
                 // Mise à jour de la pagination
                 paginationDiv.innerHTML = "";
                 if (data.has_previous) {
-                    paginationDiv.innerHTML += `<button onclick="loadClients('${search}', 1)" class="btn btn-outline-secondary mx-1">First</button>`;
-                    paginationDiv.innerHTML += `<button onclick="loadClients('${search}', ${data.current_page - 1})" class="btn btn-outline-secondary mx-1">Previous</button>`;
+                    paginationDiv.innerHTML += `<button onclick="loadclients('${search}', 1)" class="btn btn-outline-secondary mx-1">First</button>`;
+                    paginationDiv.innerHTML += `<button onclick="loadclients('${search}', ${data.current_page - 1})" class="btn btn-outline-secondary mx-1">Previous</button>`;
                 }
                 paginationDiv.innerHTML += `<span class="mx-2 align-self-center">Page ${data.current_page} of ${data.num_pages}</span>`;
                 if (data.has_next) {
-                    paginationDiv.innerHTML += `<button onclick="loadClients('${search}', ${data.current_page + 1})" class="btn btn-outline-secondary mx-1">Next</button>`;
-                    paginationDiv.innerHTML += `<button onclick="loadClients('${search}', ${data.num_pages})" class="btn btn-outline-secondary mx-1">Last</button>`;
+                    paginationDiv.innerHTML += `<button onclick="loadclients('${search}', ${data.current_page + 1})" class="btn btn-outline-secondary mx-1">Next</button>`;
+                    paginationDiv.innerHTML += `<button onclick="loadclients('${search}', ${data.num_pages})" class="btn btn-outline-secondary mx-1">Last</button>`;
                 }
             })
             .catch(error => console.error("Error loading clients:", error));
     }
 
-    function editClient(clientId) {
+    function editclient(clientId) {
         window.location.href = `/modifier_client/${clientId}/`;
     }
 
-    function deleteClient(clientId) {
+    function deleteclient(clientId) {
         if (confirm("Are you sure you want to delete this client?")) {
             fetch(`/api/clients/${clientId}/delete`, {
                 method: 'DELETE',
@@ -123,7 +123,7 @@ Customers List
             })
             .then(response => {
                 if (response.ok) {
-                    loadClients();
+                    loadclients();
                 } else {
                     alert("Failed to delete client.");
                 }
@@ -134,10 +134,10 @@ Customers List
 
     // Déclencheur sur l'input de recherche
     searchInput.addEventListener("keyup", (e) => {
-        loadClients(e.target.value);
+        loadclients(e.target.value);
     });
 
     // Chargement initial
-    loadClients();
+    loadclients();
 </script>
 {% endblock %}

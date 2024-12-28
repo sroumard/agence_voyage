@@ -18,13 +18,17 @@ urlpatterns = [
     path('register/', views.register, name='register'),
     path('dashboard/', views.dashboard, name='dashboard'),
     path('afficher_hotels/', views.afficher_hotels, name='afficher_hotels'),
-    path('afficher_deplacements/', views.afficher_deplacements, name='afficher_deplacements'),
     path('afficher_itineraires/', views.afficher_itineraires, name='afficher_itineraires'),
+
     path('afficher_clients/', views.afficher_clients_page, name='afficher_clients_page'),
+    path('afficher_deplacements/', views.afficher_deplacements_page, name='afficher_deplacements_page'),
+
     path('modifier_client/<int:client_id>/', views.modifier_client, name='modifier_client'),
     path('api/clients/<int:client_id>/delete', views.supprimer_client, name='supprimer_client'),
+    path('api/deplacements/<int:deplacement_id>/delete', views.supprimer_deplacement, name='supprimer_deplacement'),
 
 
+    path('creer_deplacement/', views.creer_deplacement, name='creer_deplacement'),
     path('creer_client/', views.creer_client, name='creer_client'),
     path('clients/<int:client_id>/creer_itineraire/', views.creer_itineraire, name='creer_itineraire'),
     path('itineraires/<int:itineraire_id>/finaliser/', views.finaliser_itineraire, name='finaliser_itineraire'),
@@ -34,5 +38,7 @@ urlpatterns = [
     path('facture/<int:itineraire_id>/', views.generer_facture_PDF, name='generer_facture'),
 
     path('api/clients/', views.afficher_clients, name='afficher_clients'),
+    path('api/deplacements/', views.afficher_deplacements, name='afficher_deplacements'),
+
     path('api/', include(router.urls)),  # API Rest
 ]
