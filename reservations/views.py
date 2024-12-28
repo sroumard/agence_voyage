@@ -1,5 +1,6 @@
 from django.shortcuts import redirect, render, get_object_or_404
 from django.http import JsonResponse, HttpResponseRedirect,HttpResponse
+import requests
 from .models import Client, Itineraire, Hotel, Activite, Jour, Deplacement
 from .forms import ClientForm, ItineraireForm, UserRegistrationForm
 from datetime import date, datetime
@@ -37,7 +38,7 @@ class CustomLoginView(LoginView):
     redirect_authenticated_user = True  # Redirige si l'utilisateur est déjà connecté
     next_page = reverse_lazy('dashboard')  # Redirige après connexion (remplacez 'home' par le nom de votre vue d'accueil)
 
-
+@login_required
 def logout_view(request):
     if request.method == "GET":
         logout(request)
@@ -64,7 +65,7 @@ def dashboard(request) :
 
 """
 
-
+@login_required
 def creer_client(request) :
     if request.method == "POST" :
         form = ClientForm(request.POST)
@@ -78,7 +79,7 @@ def creer_client(request) :
 
 
 
-
+@login_required
 def verifier_disponibilites(request):
     if request.method == "POST":
         debut = request.POST.get('debut')
@@ -106,7 +107,7 @@ def verifier_disponibilites(request):
     return render(request, 'reservations/verifier_disponibilites.html')
 
 
-
+@login_required
 def creer_itineraire(request, client_id):
     client = get_object_or_404(Client, id=client_id)
     if request.method == "POST" :
@@ -121,7 +122,7 @@ def creer_itineraire(request, client_id):
     return render(request, 'reservations/creer_itineraire.html', {'form': form, 'client': client})
 
 
-
+@login_required
 def finaliser_itineraire(request, itineraire_id):
     itineraire = get_object_or_404(Itineraire, id=itineraire_id)
     jours = itineraire.jours.all()
@@ -132,6 +133,7 @@ def finaliser_itineraire(request, itineraire_id):
         'total_budget': total_budget,
     })
 
+@login_required
 def gestion_transport(request, itineraire_id):
     itineraire = get_object_or_404(Itineraire, id=itineraire_id)
     transports_disponibles = Deplacement.objects.filter(itineraires=itineraire)
@@ -140,8 +142,7 @@ def gestion_transport(request, itineraire_id):
         'transports_disponibles': transports_disponibles,
     })
 
-import requests
-
+@login_required
 def ajouter_hotels(request):
     # Définir la requête Overpass API pour récupérer les hôtels
     overpass_url = "https://overpass-api.de/api/interpreter"
@@ -207,11 +208,18 @@ def modifier_client(request, client_id):
         form = ClientForm(request.POST, instance=client)
         if form.is_valid():
             form.save()
-            return redirect('dashboard')
+            return redirect('afficher_clients_page')
     else:
         form = ClientForm(instance=client)
     return render(request, 'reservations/modifier_client.html', {'form': form})
 
+def supprimer_client(request, client_id) :
+    if request.method == "DELETE" :    
+        client = get_object_or_404(Client, id = client_id)
+        client.delete()
+        messages.success(request, 'Client deleted successfully.')
+        return redirect('dashboard')
+    return render(request, 'reservations/supprimer_client.html')
 
 
 def afficher_deplacements(request) : 
