@@ -43,4 +43,9 @@ urlpatterns = [
     path('api/deplacements/', views.afficher_deplacements, name='afficher_deplacements'),
 
     path('api/', include(router.urls)),  # API Rest
+
+ # payment
+    path('checkout/<int:itineraire_id>/', views.checkout, name='checkout'),
+    path('success/', views.payment_success, name='payment_success'),
+    path('cancel/', views.payment_cancel, name='payment_cancel'),
 ]

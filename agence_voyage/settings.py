@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'reservations',
     'rest_framework',
     'corsheaders',
+    'django_extensions',
 ]
 
 MIDDLEWARE = [
@@ -132,3 +133,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_URL = '/login/'  # URL vers la vue de connexion
 LOGIN_REDIRECT_URL = '/reservations/dashboard/'  # URL où rediriger après connexion (remplacez par 'home' si vous avez une vue d'accueil)
 LOGOUT_REDIRECT_URL = '/'  # URL où rediriger après déconnexion
+
+
+STRIPE_SECRET_KEY = 'sk_test_51QbE4wPq4IJHDNw1FjaytAYtjif4WCoGPnW4Duw2RAQ8Ra0c37q74opWMbE68aRCkWv0VrR7CegDfKdzKqSnpfXs00MC5csddK'
+STRIPE_PUBLISHABLE_KEY = 'pk_test_51QbE4wPq4IJHDNw1XBgiyzhCPH9CWz8UYFJ7qu5JXzm5rMRGE7ULwr7YIsmAJ6e8Fq1dbekC6ynplhGWz11oKcwW00MxJhoPLg'

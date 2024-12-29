@@ -423,3 +423,52 @@ class JourViewSet(viewsets.ModelViewSet):
 class DeplacementViewSet(viewsets.ModelViewSet):
     queryset = Deplacement.objects.all()
     serializer_class = DeplacementSerializer
+
+
+
+
+
+# gerer paiement avec strip
+
+# views.py
+import stripe
+from django.conf import settings
+from django.shortcuts import render, redirect
+from django.http import JsonResponse
+from .models import Deplacement
+
+stripe.api_key = settings.STRIPE_SECRET_KEY
+
+def checkout(request, itineraire_id):
+    itineraire = get_object_or_404(Itineraire, id=itineraire_id)
+    if request.method == 'POST':
+        try:
+            # Créer une session de paiement
+            session = stripe.checkout.Session.create(
+                payment_method_types=['card'],
+                line_items=[{
+                    'price_data': {
+                        'currency': 'usd',
+                        'product_data': {
+                            'name': itineraire.nom,
+                        },
+                        'unit_amount': int(itineraire.tarif*(1.1)),  # + 10% de tva
+                    },
+                    'quantity': 1,
+                }],
+                mode='payment',
+                success_url=request.build_absolute_uri('/success/'),
+                cancel_url=request.build_absolute_uri('/cancel/'),
+            )
+            return JsonResponse({'id': session.id})
+        except Exception as e:
+            return JsonResponse({'error': str(e)})
+
+    return render(request, 'reservations/checkout.html', {'itineraire': itineraire, 'stripe_publishable_key': settings.STRIPE_PUBLISHABLE_KEY})
+
+def payment_success(request):
+    return render(request, 'reservations/payment_success.html')
+
+def payment_cancel(request):
+    return render(request, 'reservations/payment_cancel.html')
+
