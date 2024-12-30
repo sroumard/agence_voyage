@@ -352,6 +352,18 @@ def gerer_deplacement(request, deplacement_id=None):
         form = DeplacementForm(instance=deplacement)
     return render(request, 'reservations/gerer_deplacement.html', {'form': form})
 
+@login_required
+def gerer_itineraire(request, itineraire_id=None):
+    itineraire = get_object_or_404(Itineraire, id=itineraire_id) if itineraire_id else None
+    if request.method == "POST":
+        form = ItineraireForm(request.POST, instance=itineraire)
+        if form.is_valid():
+            form.save()
+            return redirect('afficher_itineraires_page')
+    else:
+        form = ItineraireForm(instance=itineraire)
+    return render(request, 'reservations/gerer_itineraire.html', {'form': form})
+
 
 
 

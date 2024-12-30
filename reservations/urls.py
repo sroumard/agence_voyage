@@ -28,7 +28,9 @@ urlpatterns = [
     path('gerer_client/<int:client_id>/', views.gerer_client, name='gerer_client'),
     path('gerer_deplacement/', views.gerer_deplacement, name='gerer_deplacement'),
     path('gerer_deplacement/<int:deplacement_id>/', views.gerer_deplacement, name='gerer_deplacement'),
-    path('modifier_deplacement/<int:deplacement_id>/', views.modifier_deplacement, name='modifier_deplacement'),
+    path('gerer_itineraire/', views.gerer_itineraire, name='gerer_itineraire'),
+    path('gerer_itineraire/<int:itineraire_id>/', views.gerer_itineraire, name='gerer_itineraire'),
+
 
     path('api/clients/<int:client_id>/delete', views.supprimer_client, name='supprimer_client'),
     path('api/deplacements/<int:deplacement_id>/delete', views.supprimer_deplacement, name='supprimer_deplacement'),
