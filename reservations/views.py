@@ -302,10 +302,29 @@ def afficher_itineraires(request):
     paginator = Paginator(itineraires, 10)  # Pagination avec 10 clients par page
     page_number = request.GET.get('page')  # Numéro de page
     page_obj = paginator.get_page(page_number)  # Récupérer la page
-    return render(request,'reservations/afficher_itineraires.html',{
-        "itineraires": page_obj, 
-        "search_query": search_query
-        })  
+    itineraires_data = [
+        {
+            "id": itineraire.id,
+            "nom": itineraire.nom,
+            "customer": itineraire.client.nom,
+            "duration": itineraire.duree,
+            "begin": itineraire.debut,
+            "end": itineraire.fin,
+            "price": itineraire.tarif,
+            "payer": itineraire.payer,
+        } for itineraire in page_obj
+    ]
+
+    return JsonResponse({
+        "itineraires" : itineraires_data,
+        "has_previous" : page_obj.has_previous(),
+        "has_next" : page_obj.has_next(),
+        "current_page" : page_obj.number,
+        "num_pages" : paginator.num_pages,
+    })
+
+def afficher_itineraires_page(request):
+    return render(request, 'reservations/afficher_itineraires.html')  
 
 
 # cette fonction remplace creer et modifier
@@ -463,6 +482,7 @@ from .models import Deplacement
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
+@login_required
 def checkout(request, itineraire_id):
     itineraire = get_object_or_404(Itineraire, id=itineraire_id)
     if request.method == 'POST':
@@ -495,4 +515,18 @@ def payment_success(request):
 
 def payment_cancel(request):
     return render(request, 'reservations/payment_cancel.html')
+
+
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.shortcuts import get_object_or_404
+from .models import Itineraire
+
+@csrf_exempt
+def toggle_payment(request, itineraire_id):
+    itineraire = get_object_or_404(Itineraire, id=itineraire_id)
+    itineraire.payer = not itineraire.payer
+    itineraire.save()
+    return JsonResponse({"success": True, "payer": itineraire.payer})
+
 

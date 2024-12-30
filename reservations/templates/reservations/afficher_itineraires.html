@@ -7,23 +7,30 @@ Carte des Hôtels
 {% block content %}
 
 <div class="container">
-    <h1>List of customers</h1>
+    <h1>List of Itinerarys</h1>
 
     <!-- Formulaire de recherche -->
-    <form method="get" action="{% url 'afficher_itineraires' %}">
+    <!-- Formulaire de recherche -->
+    <form id="search-form" method="get" action="#">
         <div class="row">
             <div class="col-md-10">
                 <input class="form-control" 
                        type="text" 
+                       id="search-input"
                        name="search" 
-                       placeholder="Research customers by name" 
-                       value="{{ search_query }}">
-            </div>
-            <div class="col-md-2">
-                <button type="submit" class="btn btn-light w-100">Research</button>
+                       placeholder="Research itinerary by customer names">
             </div>
         </div>
     </form>
+
+    <!-- Bouton pour ajouter un nouveau itineraire -->
+    <a href="{% url 'afficher_itineraires' %}"><button id="add-itinerary-btn" class="btn btn-primary mt-4">Add New Itinerarys</button></a>
+
+    <!-- Conteneur pour le formulaire -->
+    <div id="add-itinerary-form-container" class="mt-3" style="display: none;">
+        <!-- Le formulaire sera injecté ici -->
+    </div>
+
 
     <!-- Tableau des itineraires -->
     <table class="table table-striped mt-4">
@@ -31,49 +38,172 @@ Carte des Hôtels
             <tr>
                 <th>ID</th>
                 <th>Name</th>
+                <th>Customer</th>
                 <th>duration</th>
                 <th>Begin</th>
-                <th>end</th>
-                <th>Customer</th>
-              
+                <th>end</th>        
                 <th>price</th>                
             </tr>
         </thead>
-
-        <tbody>
-            {% for itineraire in itineraires %}
-            <tr>
-                <td>{{ itineraire.id }}</td>
-                <td>{{ itineraire.nom }}</td>
-                <td>{{ itineraire.duree }}</td>
-                <td>{{ itineraire.debut }}</td>
-                <td>{{ itineraire.fin }}</td>
-                <td>{{ itineraire.client.nom }}</td>
-                <td>{{ itineraire.tarif }}</td>
-
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="7" class="text-center">No itinerary found.</td>
-            </tr>
-            {% endfor %}
+        <tbody id="itinerarys-table-body">
+            <!-- Contenu des itineraires sera injecté ici -->
         </tbody>
     </table>
+       
 
-    <!-- Pagination -->
-    <div class="pagination d-flex justify-content-center">
-        {% if itineraires.has_previous %}
-        <a class="btn btn-outline-secondary mx-1" href="?search={{ search_query }}&page=1">First</a>
-        <a class="btn btn-outline-secondary mx-1" href="?search={{ search_query }}&page={{ itineraires.previous_page_number }}">Previous</a>
-        {% endif %}
-
-        <span class="mx-2 align-self-center">Page {{ itineraires.number }} of {{ itineraires.paginator.num_pages }}</span>
-
-        {% if itineraires.has_next %}
-        <a class="btn btn-outline-secondary mx-1" href="?search={{ search_query }}&page={{ itineraires.next_page_number }}">Next</a>
-        <a class="btn btn-outline-secondary mx-1" href="?search={{ search_query }}&page={{ itineraires.paginator.num_pages }}">Last</a>
-        {% endif %}
+     <!-- Pagination dynamique -->
+     <div id="pagination" class="pagination d-flex justify-content-center"></div>
     </div>
-</div>
+
+    <script>
+        const searchInput = document.getElementById("search-input");
+        const tableBody = document.getElementById("itinerarys-table-body");
+        const paginationDiv = document.getElementById("pagination");
+        const csrfToken = '{{ csrf_token }}';
+        const payButtonClass = 'btn btn-info'; // Classe pour le bouton
+        const payButtonText = 'Pay Now'; // Texte pour le bouton
+    
+    
+        function loaditineraires(search = "", page = 1) {
+            fetch(`/api/itineraires?search=${search}&page=${page}`)
+                .then(response => response.json())
+                .then(data => {
+                    // Mise à jour du tableau
+                    tableBody.innerHTML = "";
+                    if (data.itineraires.length > 0) {
+                        data.itineraires.forEach(itineraire => {
+                            tableBody.innerHTML += `
+                                <tr>
+                                    <td>${itineraire.id}</td>
+                                    <td>${itineraire.nom}</td>
+                                    <td>${itineraire.customer}</td>
+                                    <td>${itineraire.duration}</td>
+                                    <td>${itineraire.begin}</td>
+                                    <td>${itineraire.end}</td>
+                                    <td>${itineraire.price}</td>
+                                    <td>
+                                        <button class="btn btn-warning" onclick="edititineraire(${itineraire.id})">Edit</button>
+                                        <button class="btn btn-danger" onclick="deleteitineraire(${itineraire.id})">Delete</button>
+                                        <button class="btn btn-info" onclick="togglePayment(${itineraire.id})" data-itineraire-id="${itineraire.id}">${itineraire.payer ? 'Paid' : 'Pay Now'}</button>
+                                    </td>
+                                </tr>
+                            `;
+                        });
+                    } else {
+                        tableBody.innerHTML = `
+                            <tr>
+                                <td colspan="7" class="text-center">No itineraries found.</td>
+                            </tr>
+                        `;
+                    }
+
+
+
+
+                // Mise à jour de la pagination
+                paginationDiv.innerHTML = "";
+                if (data.has_previous) {
+                    paginationDiv.innerHTML += `<button onclick="loaditineraires('${search}', 1)" class="btn btn-outline-secondary mx-1">First</button>`;
+                    paginationDiv.innerHTML += `<button onclick="loaditineraires('${search}', ${data.current_page - 1})" class="btn btn-outline-secondary mx-1">Previous</button>`;
+                }
+                paginationDiv.innerHTML += `<span class="mx-2 align-self-center">Page ${data.current_page} of ${data.num_pages}</span>`;
+                if (data.has_next) {
+                    paginationDiv.innerHTML += `<button onclick="loaditineraires('${search}', ${data.current_page + 1})" class="btn btn-outline-secondary mx-1">Next</button>`;
+                    paginationDiv.innerHTML += `<button onclick="loaditineraires('${search}', ${data.num_pages})" class="btn btn-outline-secondary mx-1">Last</button>`;
+                }
+            })
+            .catch(error => console.error("Error loading itineraires:", error));
+    }
+
+    function edititineraire(itineraireId) {
+        window.location.href = `/gerer_itineraire/${itineraireId}/`;
+    }
+
+    function togglePayment(itineraireId) {
+     fetch(`/api/itineraires/${itineraireId}/toggle_payment`, {
+         method: 'POST',
+         headers: {
+             'Content-Type': 'application/json',
+             'X-CSRFToken': csrfToken
+         }
+     })
+     .then(response => response.json())
+     .then(data => {
+         if (data.success) {
+             // Mise à jour de l'état du bouton en fonction du paiement
+             const button = document.querySelector(`button[data-itineraire-id="${itineraireId}"]`);
+             if (data.payer) {
+                 button.textContent = 'Paid'; // Le paiement a été effectué
+                 button.classList.remove('btn-info');
+                 button.classList.add('btn-success'); // Vous pouvez changer la couleur du bouton si vous le souhaitez
+             } else {
+                 button.textContent = 'Pay Now'; // Le paiement a été annulé
+                 button.classList.remove('btn-success');
+                 button.classList.add('btn-info');
+                 window.location.href = `/checkout/${itineraireId}/`;
+
+             }
+         } else {
+             alert("Failed to toggle payment status.");
+         }
+     })
+     .catch(error => console.error("Error toggling payment status:", error));
+ }
+
+    function deleteitineraire(itineraireId) {
+        if (confirm("Are you sure you want to delete this itineraire?")) {
+            fetch(`/api/itineraires/${itineraireId}/delete`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    loaditineraires();
+                } else {
+                    alert("Failed to delete itineraire.");
+                }
+            })
+            .catch(error => console.error("Error deleting itineraire:", error));
+        }
+    }
+
+    // Déclencheur sur l'input de recherche
+    searchInput.addEventListener("keyup", (e) => {
+        loaditineraires(e.target.value);
+    });
+
+    // Chargement initial
+    loaditineraires();
+</script>
 
 {% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

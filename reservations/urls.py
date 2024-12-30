@@ -18,10 +18,11 @@ urlpatterns = [
     path('register/', views.register, name='register'),
     path('dashboard/', views.dashboard, name='dashboard'),
     path('afficher_hotels/', views.afficher_hotels, name='afficher_hotels'),
-    path('afficher_itineraires/', views.afficher_itineraires, name='afficher_itineraires'),
 
     path('afficher_clients/', views.afficher_clients_page, name='afficher_clients_page'),
     path('afficher_deplacements/', views.afficher_deplacements_page, name='afficher_deplacements_page'),
+    path('afficher_itineraires/', views.afficher_itineraires_page, name='afficher_itineraires_page'),
+
 
     path('gerer_client/', views.gerer_client, name='gerer_client'),
     path('gerer_client/<int:client_id>/', views.gerer_client, name='gerer_client'),
@@ -43,6 +44,7 @@ urlpatterns = [
 
     path('api/clients/', views.afficher_clients, name='afficher_clients'),
     path('api/deplacements/', views.afficher_deplacements, name='afficher_deplacements'),
+    path('api/itineraires/', views.afficher_itineraires, name='afficher_itineraires'),
 
     path('api/', include(router.urls)),  # API Rest
 
@@ -50,4 +52,7 @@ urlpatterns = [
     path('checkout/<int:itineraire_id>/', views.checkout, name='checkout'),
     path('success/', views.payment_success, name='payment_success'),
     path('cancel/', views.payment_cancel, name='payment_cancel'),
+
+    path('api/itineraires/<int:itineraire_id>/toggle_payment', views.toggle_payment, name='toggle_payment'),
+
 ]

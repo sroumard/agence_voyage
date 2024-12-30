@@ -69,6 +69,8 @@ class Itineraire (models.Model) :
     fin = models.DateField()
     deplacement = models.ForeignKey(Deplacement, on_delete= models.CASCADE, related_name='itineraires', null=True)
     tarif = models.DecimalField(max_digits=10, decimal_places=2, blank = True, null=True) 
+    payer = models.BooleanField(default= False)
+
 
     def __str__(self): 
         return f"Itineraire : {self.nom} "
