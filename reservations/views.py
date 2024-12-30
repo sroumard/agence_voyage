@@ -308,6 +308,30 @@ def afficher_itineraires(request):
         })  
 
 
+# cette fonction remplace creer et modifier
+@login_required
+def gerer_client(request, client_id=None):
+    client = get_object_or_404(Client, id=client_id) if client_id else None
+    if request.method == "POST":
+        form = ClientForm(request.POST, instance=client)
+        if form.is_valid():
+            form.save()
+            return redirect('afficher_clients_page')
+    else:
+        form = ClientForm(instance=client)
+    return render(request, 'reservations/gerer_client.html', {'form': form})
+
+@login_required
+def gerer_deplacement(request, deplacement_id=None):
+    deplacement = get_object_or_404(Deplacement, id=deplacement_id) if deplacement_id else None
+    if request.method == "POST":
+        form = DeplacementForm(request.POST, instance=deplacement)
+        if form.is_valid():
+            form.save()
+            return redirect('afficher_deplacements_page')
+    else:
+        form = DeplacementForm(instance=deplacement)
+    return render(request, 'reservations/gerer_deplacement.html', {'form': form})
 
 
 

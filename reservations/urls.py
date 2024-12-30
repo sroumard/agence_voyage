@@ -23,7 +23,10 @@ urlpatterns = [
     path('afficher_clients/', views.afficher_clients_page, name='afficher_clients_page'),
     path('afficher_deplacements/', views.afficher_deplacements_page, name='afficher_deplacements_page'),
 
-    path('modifier_client/<int:client_id>/', views.modifier_client, name='modifier_client'),
+    path('gerer_client/', views.gerer_client, name='gerer_client'),
+    path('gerer_client/<int:client_id>/', views.gerer_client, name='gerer_client'),
+    path('gerer_deplacement/', views.gerer_deplacement, name='gerer_deplacement'),
+    path('gerer_deplacement/<int:deplacement_id>/', views.gerer_deplacement, name='gerer_deplacement'),
     path('modifier_deplacement/<int:deplacement_id>/', views.modifier_deplacement, name='modifier_deplacement'),
 
     path('api/clients/<int:client_id>/delete', views.supprimer_client, name='supprimer_client'),
@@ -31,7 +34,6 @@ urlpatterns = [
 
 
     path('creer_deplacement/', views.creer_deplacement, name='creer_deplacement'),
-    path('creer_client/', views.creer_client, name='creer_client'),
     path('clients/<int:client_id>/creer_itineraire/', views.creer_itineraire, name='creer_itineraire'),
     path('itineraires/<int:itineraire_id>/finaliser/', views.finaliser_itineraire, name='finaliser_itineraire'),
     path('itineraires/<int:itineraire_id>/transport/', views.gestion_transport, name='gestion_transport'),

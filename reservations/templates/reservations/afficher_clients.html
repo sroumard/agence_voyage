@@ -23,7 +23,7 @@ Customers List
     </form>
 
     <!-- Bouton pour ajouter un nouveau client -->
-    <a href="{% url 'creer_client' %}"><button id="add-customer-btn" class="btn btn-primary mt-4">Add New Customer</button></a>
+    <a href="{% url 'gerer_client' %}"><button id="add-customer-btn" class="btn btn-primary mt-4">Add New Customer</button></a>
 
     <!-- Conteneur pour le formulaire -->
     <div id="add-customer-form-container" class="mt-3" style="display: none;">
@@ -109,7 +109,7 @@ Customers List
     }
 
     function editclient(clientId) {
-        window.location.href = `/modifier_client/${clientId}/`;
+        window.location.href = `/gerer_client/${clientId}/`;
     }
 
     function deleteclient(clientId) {
